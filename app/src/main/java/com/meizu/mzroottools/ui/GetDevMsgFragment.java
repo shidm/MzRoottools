@@ -48,6 +48,7 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
     private TextView dev_mark, dev_msg_msg, dev_msg_prompt;
     private ImageView dev_msg_img;
     private RelativeLayout dev_msg_father;
+    public static DeviceMessage deviceMessagesg = null;
 
     private View view;
 
@@ -146,11 +147,17 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
     }
 
     private void getDevMsg() {
+//        Log.d(TAG, "getRootCode: "
+//                + PhoneUtils.getRootSignatureCode(getContext())
+//                + "______"
+//                + PhoneUtils.isFlymeRom()
+//                + "______"
+//                + PhoneUtils.getPsnAndChipId(getContext()));
         hintView(2);
-        DeviceMessage msg = new DeviceMessage(PhoneUtils.getPhoneModel(),PhoneUtils.getPhoneSn()
-                ,PhoneUtils.getPsnAndChipId(getContext()));
+        deviceMessagesg = new DeviceMessage(PhoneUtils.getPhoneModel(), PhoneUtils.getPhoneSn()
+                , PhoneUtils.getPsnAndChipId(getContext()), PhoneUtils.getPhoneImei());
         //判断设备信息是否获取完整
-        if (!msg.haveAllMsg()) {
+        if (!deviceMessagesg.haveAllMsg()) {
             dev_msg_img.setImageResource(R.mipmap.ic_launcher_round);
             dev_mark.setText("获取失败");
             dev_mark.setTextColor(Color.BLACK);
@@ -165,9 +172,10 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
             dev_msg_img.setImageResource(R.mipmap.ic_launcher_round);
             dev_mark.setText("获取成功");
             dev_mark.setTextColor(Color.BLACK);
-            dev_msg_msg.setText("您的设备信息如下\n\n" + "设备型号：" + msg.getdeviceModel() + "\n\n"
-                    + "SN号：" + msg.getDeviceSn() + "\n\n"
-                    + "CHPID：" + msg.getdevicePsnAndChipId());
+            dev_msg_msg.setText("您的设备信息如下\n\n" + "设备型号："
+                    + deviceMessagesg.getdeviceModel() + "\n\n"
+                    + "SN号：" + deviceMessagesg.getDeviceSn() + "\n\n"
+                    + "CHPID：" + deviceMessagesg.getdevicePsnAndChipId());
             dev_msg_msg.setTextColor(Color.BLACK);
             dev_msg_prompt.setText("请至网页申请页填写以上设备信息提交解锁申请");
             dev_msg_prompt.setTextColor(Color.GRAY);
@@ -226,8 +234,8 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
                 go_login.setVisibility(View.GONE);
                 dev_msg_father.setVisibility(View.GONE);
                 no_permission.setVisibility(View.VISIBLE);
-                no_permission.setText("请前往：\n"+"手机管家->权限管理->应用权限管理->Root工具\n"
-                    + "开启读取联系人权限");
+                no_permission.setText("请前往：\n" + "手机管家->权限管理->应用权限管理->Root工具\n"
+                        + "开启读取联系人权限");
                 no_permission.setGravity(Gravity.CENTER_HORIZONTAL);
                 break;
             default:
@@ -272,7 +280,7 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     if (shouldShowRequestPermissionRationale(permissions[0])) {
                         //没有点击不再提醒
-                    }else{
+                    } else {
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext())
                                 .setMessage("未取得您的联系人权限,“Root工具”无法正常使用,请前往应用权限设置打开权限")
                                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {

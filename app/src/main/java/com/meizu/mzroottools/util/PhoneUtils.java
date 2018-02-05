@@ -264,10 +264,10 @@ public class PhoneUtils {
                 try {
                     rootSignatureCode = (String) ReflectHelper.invoke(deviceStateManager, "getRootSignatureCode", new Object[]{});
                 } catch (Exception e) {
-                    Log.e("cwj-root", "getPsnAndChipId E: " + e, e);
+                    Log.e("cwj-root", "getRootSignatureCode E: " + e, e);
                     return rootSignatureCode;
                 }
-                Log.d("cwj-root", "getPsnAndChipId -> " + rootSignatureCode);
+                Log.d("cwj-root", "getRootSignatureCode -> " + rootSignatureCode);
             }
         }
         return rootSignatureCode;

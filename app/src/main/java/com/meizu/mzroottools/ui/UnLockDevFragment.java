@@ -77,7 +77,9 @@ public class UnLockDevFragment extends Fragment implements View.OnClickListener 
                 //网络请求获取root码并设置root码解锁设备
                 Toast.makeText(getContext(),"解锁",Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "isRoot: "+PhoneUtils.isPhoneRooted(getContext()));
-                //GetRootCode.getRootCodeFromNetwork("");
+                if (GetDevMsgFragment.deviceMessagesg != null) {
+                    GetRootCode.getRootCodeFromNetwork("172.16.185.122",GetDevMsgFragment.deviceMessagesg);
+                }
                 break;
             default:
                 break;

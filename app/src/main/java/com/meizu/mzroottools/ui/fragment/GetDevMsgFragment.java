@@ -1,11 +1,10 @@
-package com.meizu.mzroottools.ui;
+package com.meizu.mzroottools.ui.fragment;
 
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,14 +32,14 @@ import com.meizu.account.oauth.MzAuthenticator;
 import com.meizu.account.oauth.OnMzAuthListener;
 import com.meizu.mzroottools.BuildConfig;
 import com.meizu.mzroottools.R;
-import com.meizu.mzroottools.pojo.DeviceMessage;
-import com.meizu.mzroottools.util.PhoneUtils;
-
-import java.lang.reflect.Method;
+import com.meizu.mzroottools.model.pojo.DeviceMessage;
+import com.meizu.mzroottools.presenter.IShowDeviceMessagePresenter;
+import com.meizu.mzroottools.presenter.impl.ShowDeviceMessagePresenter;
+import com.meizu.mzroottools.ui.IGetDevMsg;
 
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
-public class GetDevMsgFragment extends Fragment implements View.OnClickListener {
+public class GetDevMsgFragment extends Fragment implements IGetDevMsg, View.OnClickListener {
 
     private TextView go_login;
     private TextView no_permission;
@@ -48,7 +47,6 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
     private TextView dev_mark, dev_msg_msg, dev_msg_prompt;
     private ImageView dev_msg_img;
     private RelativeLayout dev_msg_father;
-    public static DeviceMessage deviceMessagesg = null;
 
     private View view;
 
@@ -59,6 +57,8 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
     private static final int PERMISSIONS_STORAGE = 123;//权限请求码
 
     private static final String TAG = "获取设备信息";
+
+    private IShowDeviceMessagePresenter iShowDeviceMessagePresenter = null;
 
     @Nullable
     @Override
@@ -127,6 +127,8 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
         dev_msg_msg = view.findViewById(R.id.dev_msg_message);
         dev_msg_prompt = view.findViewById(R.id.dev_msg_prompt);
         dev_msg_prompt.setOnClickListener(this);
+
+        iShowDeviceMessagePresenter = new ShowDeviceMessagePresenter(this);
     }
 
     @Override
@@ -134,30 +136,21 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
         switch (view.getId()) {
             case R.id.getMsgCard:
                 //获取信息
-                getDevMsg();
+                iShowDeviceMessagePresenter.showDevMsg(getContext());
                 //Toast.makeText(getContext(), "获取设备信息：" + Build.MODEL + getSerialNumber(), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.dev_msg_prompt:
-                Toast.makeText(getContext(), "重新获取数据", Toast.LENGTH_SHORT).show();
-                getDevMsg();
+                iShowDeviceMessagePresenter.showDevMsg(getContext());
                 break;
             default:
                 break;
         }
     }
 
-    private void getDevMsg() {
-//        Log.d(TAG, "getRootCode: "
-//                + PhoneUtils.getRootSignatureCode(getContext())
-//                + "______"
-//                + PhoneUtils.isFlymeRom()
-//                + "______"
-//                + PhoneUtils.getPsnAndChipId(getContext()));
+    private void getDevMsg(DeviceMessage deviceMessage) {
         hintView(2);
-        deviceMessagesg = new DeviceMessage(PhoneUtils.getPhoneModel(), PhoneUtils.getPhoneSn()
-                , PhoneUtils.getPsnAndChipId(getContext()), PhoneUtils.getPhoneImei());
         //判断设备信息是否获取完整
-        if (!deviceMessagesg.haveAllMsg()) {
+        if (!deviceMessage.haveAllMsg()) {
             dev_msg_img.setImageResource(R.mipmap.ic_launcher_round);
             dev_mark.setText("获取失败");
             dev_mark.setTextColor(Color.BLACK);
@@ -173,9 +166,9 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
             dev_mark.setText("获取成功");
             dev_mark.setTextColor(Color.BLACK);
             dev_msg_msg.setText("您的设备信息如下\n\n" + "设备型号："
-                    + deviceMessagesg.getdeviceModel() + "\n\n"
-                    + "SN号：" + deviceMessagesg.getDeviceSn() + "\n\n"
-                    + "CHPID：" + deviceMessagesg.getdevicePsnAndChipId());
+                    + deviceMessage.getdeviceModel() + "\n\n"
+                    + "SN号：" + deviceMessage.getDeviceSn() + "\n\n"
+                    + "CHPID：" + deviceMessage.getdeviceChipId());
             dev_msg_msg.setTextColor(Color.BLACK);
             dev_msg_prompt.setText("请至网页申请页填写以上设备信息提交解锁申请");
             dev_msg_prompt.setTextColor(Color.GRAY);
@@ -187,7 +180,7 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int permission = checkSelfPermission(getContext(), PERMISSIONS[0]);//检查是否有权限（此处读写权限获取其一就可以）
             if (permission != PackageManager.PERMISSION_GRANTED) {
-
+                hintView(3);
                 this.requestPermissions(
                         PERMISSIONS,
                         PERMISSIONS_STORAGE
@@ -298,10 +291,16 @@ public class GetDevMsgFragment extends Fragment implements View.OnClickListener 
                         alertDialog.create().show();
                     }
                     hintView(3);
-                }
+                } else
+                    checkLogin();
                 break;
             default:
                 break;
         }
+    }
+
+    @Override
+    public void show(DeviceMessage deviceMessage) {
+        getDevMsg(deviceMessage);
     }
 }

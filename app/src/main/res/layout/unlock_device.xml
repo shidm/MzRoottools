@@ -1,56 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.percent.PercentRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="30dp">
 
-
-    <ImageView
-        android:id="@+id/unlock_img"
-        android:layout_margin="30dp"
-        android:layout_centerHorizontal="true"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:scaleType="centerCrop"/>
-
-    <LinearLayout
-        android:id="@+id/unlock_success"
-        android:layout_below="@id/unlock_img"
+    <RelativeLayout
+        android:id="@+id/unWaitUI"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/unlock_msg_mark"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/unlock_img"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="30dp"
+            android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/unlock_msg_prompt"
-            android:layout_marginTop="20dp"
+        <LinearLayout
+            android:id="@+id/unlock_success"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/gray"
-            android:textSize="16sp"/>
+            android:layout_below="@id/unlock_img"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/unlock_msg_mark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/unlock_button"
-        android:layout_below="@id/unlock_img"
-        android:layout_marginTop="50dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="立即解锁"
-        android:textColor="#ffffff"
-        android:background="@drawable/unlockbutton"/>
+            <TextView
+                android:id="@+id/unlock_msg_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:textColor="@color/gray"
+                android:textSize="16sp" />
 
+        </LinearLayout>
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/unlock_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/unlock_img"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/unlockbutton"
+            android:text="立即解锁"
+            android:textColor="#ffffff" />
+
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/requestProgressBar"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        app:layout_marginTopPercent="35%"
+        android:layout_centerHorizontal="true"
+        android:indeterminateTint="@color/SkyBule"
+        android:visibility="gone" />
+
+</android.support.percent.PercentRelativeLayout>

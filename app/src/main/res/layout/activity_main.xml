@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.meizu.mzroottools.ui.MainActivity">
+    tools:context="com.meizu.mzroottools.ui.activity.MainActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -59,13 +59,6 @@
             android:id="@+id/viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-
-        <ProgressBar
-            android:layout_centerInParent="true"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:indeterminateTint="@color/SkyBule"
-            android:visibility="gone"/>
 
     </RelativeLayout>
 

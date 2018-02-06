@@ -30,7 +30,7 @@ public class UnLockDevFragment extends Fragment implements IUnlockDev, View.OnCl
     private ProgressBar progressBar;
     private RelativeLayout unWaitUI;
 
-    private static final String TAG = "解锁设备";
+    private static final String TAG = "UnLockDevFragment-->";
 
     private static final String URL = "http://mroot.flyme.cn//api/v1/service/getcode";
 

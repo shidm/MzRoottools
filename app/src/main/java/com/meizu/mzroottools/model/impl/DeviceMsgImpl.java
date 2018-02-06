@@ -9,8 +9,15 @@ import com.meizu.mzroottools.util.PhoneUtils;
 
 public class DeviceMsgImpl implements IDeviceMsg {
 
+    private static final String TAG = "DeviceMsgImpl-->";
+
     private static DeviceMessage deviceMessage = null;
 
+    /**
+     * @param context
+     * @param isNeedRefresh 是否需要刷新数据
+     * @return 设备信息
+     */
     @Override
     public DeviceMessage getDeviceMessage(Context context, boolean isNeedRefresh) {
         if (deviceMessage != null && isNeedRefresh) {
@@ -20,7 +27,7 @@ public class DeviceMsgImpl implements IDeviceMsg {
                     , PhoneUtils.getPhoneSn(), PhoneUtils.getPsnAndChipId(context).substring(16)
                     , PhoneUtils.getPhoneImei(), PhoneUtils.isPhoneRooted(context)
                     , PhoneUtils.isFlymeRom());
-            Log.d("getDeviceMessage: ", PhoneUtils.getPsnAndChipId(context).substring(16));
+            Log.d(TAG, PhoneUtils.getPsnAndChipId(context).substring(16));
         }
         return deviceMessage;
     }
@@ -30,6 +37,11 @@ public class DeviceMsgImpl implements IDeviceMsg {
         return PhoneUtils.getRootSignatureCode(context);
     }
 
+    /**
+     * @param context
+     * @param bytes Root码
+     * @return 储存root返回值
+     */
     @Override
     public int setRootCode(Context context, byte[] bytes) {
         return PhoneUtils.setRootSignatureCode(context, bytes);

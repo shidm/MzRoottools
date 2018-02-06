@@ -56,7 +56,7 @@ public class GetDevMsgFragment extends Fragment implements IGetDevMsg, View.OnCl
     };
     private static final int PERMISSIONS_STORAGE = 123;//权限请求码
 
-    private static final String TAG = "获取设备信息";
+    private static final String TAG = "GetDevMsgFragment-->";
 
     private IShowDeviceMessagePresenter iShowDeviceMessagePresenter = null;
 
@@ -147,7 +147,12 @@ public class GetDevMsgFragment extends Fragment implements IGetDevMsg, View.OnCl
         }
     }
 
-    private void getDevMsg(DeviceMessage deviceMessage) {
+    /**
+     * 显示设备信息
+     *
+     * @param deviceMessage 设备信息
+     */
+    private void showDevMsg(DeviceMessage deviceMessage) {
         hintView(2);
         //判断设备信息是否获取完整
         if (!deviceMessage.haveAllMsg()) {
@@ -236,7 +241,7 @@ public class GetDevMsgFragment extends Fragment implements IGetDevMsg, View.OnCl
         }
     }
 
-    private void gotoMeizuPermission() {
+    private void gotoOpenPermission() {
 
         //打开应用权限管理界面
 
@@ -285,7 +290,7 @@ public class GetDevMsgFragment extends Fragment implements IGetDevMsg, View.OnCl
                                 .setPositiveButton("去打开", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        gotoMeizuPermission();
+                                        gotoOpenPermission();
                                     }
                                 }).setCancelable(false);
                         alertDialog.create().show();
@@ -301,6 +306,6 @@ public class GetDevMsgFragment extends Fragment implements IGetDevMsg, View.OnCl
 
     @Override
     public void show(DeviceMessage deviceMessage) {
-        getDevMsg(deviceMessage);
+        showDevMsg(deviceMessage);
     }
 }

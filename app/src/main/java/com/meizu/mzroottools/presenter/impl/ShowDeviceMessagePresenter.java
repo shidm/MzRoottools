@@ -12,6 +12,8 @@ public class ShowDeviceMessagePresenter implements IShowDeviceMessagePresenter {
     private IGetDevMsg iGetDevMsg;
     private IDeviceMsg iDeviceMsg;
 
+    private static final String TAG = "ShowDeviceMessagePresenter-->";
+
     public ShowDeviceMessagePresenter(IGetDevMsg iGetDevMsg) {
         this.iGetDevMsg = iGetDevMsg;
     }

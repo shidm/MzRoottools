@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private float offset = 0;
     private int whichPosition = 0;
 
-    private static final String TAG = "主程序";
+    private static final String TAG = "main-->";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,11 +110,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             float theOffset = positionOffset * getWindowWidth() / 2 + offset;
             setYbPosition((int) theOffset);
             if (theOffset > getWindowWidth()/2) {
-                getMsgTitle.setTextColor(Color.BLACK);
-                unlockTitle.setTextColor(Color.RED);
+                setTittleColor(1);
             } else {
-                getMsgTitle.setTextColor(Color.RED);
-                unlockTitle.setTextColor(Color.BLACK);
+                setTittleColor(0);
             }
         }
     }
@@ -146,6 +144,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     public void setPage(int position) {
         viewPager.setCurrentItem(position);
+        setTittleColor(position);
+    }
+
+    private void setTittleColor(int position){
         if (position == 0) {
             getMsgTitle.setTextColor(Color.RED);
             unlockTitle.setTextColor(Color.BLACK);

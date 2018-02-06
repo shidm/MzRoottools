@@ -21,11 +21,13 @@ public class RootPresenter implements IRootPresenter {
     private IGetRootCode iGetRootCode;
     private Context context;
 
+    private static final String TAG = "RootPresenter-->";
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.d("handleMessage: ", "接收消息成功");
+            Log.d(TAG, "接收消息成功");
             isFailed((GetRootCodeBackMessage) msg.obj);
         }
     };
@@ -53,12 +55,27 @@ public class RootPresenter implements IRootPresenter {
         return iDeviceMsg.getRootCode(context);
     }
 
+    /**
+     * 请求root码是否成功
+     *
+     * @param getRootCodeBackMessage 网络请求返回信息
+     */
     private void isFailed(GetRootCodeBackMessage getRootCodeBackMessage) {
         if (getRootCodeBackMessage.getCode().equals("200")) {
+            Log.d(TAG, "请求root码成功");
             iDeviceMsg.setRootCode(context, getRootCodeBackMessage.getValue().getCode().getBytes());
             iUnlockDev.getRootCode(true);
         } else {
-            Log.d("handleMessage: ", getRootCodeBackMessage.toString());
+            /*
+            * 请求数据失败
+            * code：
+            * 198001->接口签名错误
+            * 120015->imei错误
+            * 120016->sn错误
+            * 120017->chipid错误
+            * 120019->解锁吗不存在
+            * */
+            Log.d(TAG, "请求root码失败,错误码:"+getRootCodeBackMessage.getCode());
             iUnlockDev.getRootCode(false);
         }
     }

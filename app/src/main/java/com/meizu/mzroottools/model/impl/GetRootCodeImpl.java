@@ -12,6 +12,7 @@ import com.meizu.mzroottools.model.pojo.GetRootCodeBackMessage;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -23,7 +24,11 @@ import okhttp3.Response;
 
 public class GetRootCodeImpl implements IGetRootCode {
 
-    String RULE_KEY = "saf.CTR#214mz";
+    private static final String TAG = "GetRootCodeImpl-->";
+
+    private static final String RULE_KEY = "saf.CTR#214mz";
+
+    //网络请求获取Root码
 
     @Override
     public void getRootCodeFromNetwork(String url, DeviceMessage deviceMessage
@@ -33,24 +38,31 @@ public class GetRootCodeImpl implements IGetRootCode {
                 + deviceMessage.getdeviceChipId()
                 + RULE_KEY);
 
-        OkHttpClient okHttpClient = new OkHttpClient();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(5000, TimeUnit.MILLISECONDS)
+                .build();
         RequestBody body = new FormBody.Builder()
                 .add("imei", deviceMessage.getDeviceImei())
                 .add("sn", deviceMessage.getDeviceSn())
                 .add("chipid", deviceMessage.getdeviceChipId())
                 .add("sign", sign)
                 .build();
-        Log.d("getRootCodeFromNetwork:", sign);
+        Log.d(TAG, sign);
 
-        Request request = new Request.Builder().url(url).method("POST", body).build();
+        Request request = new Request.Builder()
+                .url(url)
+                .method("POST", body)
+                .build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                //请求root码失败
+                //请求失败
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+
+                //模拟耗时操作
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
@@ -67,6 +79,8 @@ public class GetRootCodeImpl implements IGetRootCode {
             }
         });
     }
+
+    //md5加密
 
     public static String getMd5(String message) {
         MessageDigest md5;

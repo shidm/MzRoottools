@@ -215,6 +215,12 @@ public class PhoneUtils {
         return sIsIndiaLocale;
     }
 
+    /**
+     * 获取psn与chipid
+     *
+     * @param context
+     * @return
+     */
     public synchronized static String getPsnAndChipId(Context context) {
         String psnAndChipId = null;
         String deviceStatus = "";
@@ -244,6 +250,12 @@ public class PhoneUtils {
         return psnAndChipId;
     }
 
+    /**
+     * 获取Root码
+     *
+     * @param context
+     * @return
+     */
     public synchronized static String getRootSignatureCode(Context context) {
         String rootSignatureCode = null;
         String deviceStatus = "";
@@ -273,6 +285,13 @@ public class PhoneUtils {
         return rootSignatureCode;
     }
 
+    /**
+     * 储存root码
+     *
+     * @param context
+     * @param rootSignatureCode root码
+     * @return
+     */
     public synchronized static int setRootSignatureCode(Context context, byte[] rootSignatureCode) {
         int ret = -1;
         String deviceStatus = "";

@@ -33,7 +33,7 @@ public class DeviceMsgImpl implements IDeviceMsg {
     }
 
     @Override
-    public String getRootCode(Context context) {
+    public byte[] getRootCode(Context context) {
         return PhoneUtils.getRootSignatureCode(context);
     }
 

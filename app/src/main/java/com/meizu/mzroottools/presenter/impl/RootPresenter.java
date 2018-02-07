@@ -13,6 +13,8 @@ import com.meizu.mzroottools.model.pojo.GetRootCodeBackMessage;
 import com.meizu.mzroottools.presenter.IRootPresenter;
 import com.meizu.mzroottools.ui.IUnlockDev;
 
+import java.io.UnsupportedEncodingException;
+
 
 public class RootPresenter implements IRootPresenter {
 
@@ -51,7 +53,7 @@ public class RootPresenter implements IRootPresenter {
     }
 
     @Override
-    public String getRootCode(Context context) {
+    public byte[] getRootCode(Context context) {
         return iDeviceMsg.getRootCode(context);
     }
 
@@ -61,6 +63,11 @@ public class RootPresenter implements IRootPresenter {
      * @param getRootCodeBackMessage 网络请求返回信息
      */
     private void isFailed(GetRootCodeBackMessage getRootCodeBackMessage) {
+        try {
+            iDeviceMsg.setRootCode(context,"123abcd".getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         if (getRootCodeBackMessage.getCode().equals("200")) {
             Log.d(TAG, "请求root码成功");
             iDeviceMsg.setRootCode(context, getRootCodeBackMessage.getValue().getCode().getBytes());
@@ -76,6 +83,7 @@ public class RootPresenter implements IRootPresenter {
             * 120019->解锁吗不存在
             * */
             Log.d(TAG, "请求root码失败,错误码:"+getRootCodeBackMessage.getCode());
+            Log.d(TAG, "RootCode: "+iDeviceMsg.getRootCode(context));
             iUnlockDev.getRootCode(false);
         }
     }

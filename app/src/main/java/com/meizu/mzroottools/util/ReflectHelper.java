@@ -2,6 +2,7 @@ package com.meizu.mzroottools.util;
 
 import android.os.Build;
 import android.util.ArrayMap;
+import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -80,6 +81,7 @@ public class ReflectHelper {
     private static Object invoke(Class<?> objClass, Object obj, String methodName, Object... params) throws Exception{
         if(params == null || params.length == 0){
 //			Method method = objClass.getMethod(methodName);
+            Log.d("invoke:", "params.length==0");
             String key = objClass.getName() + "_" +  methodName;
             synchronized (mMethodMap) {
                 Method method = mMethodMap.get(key);

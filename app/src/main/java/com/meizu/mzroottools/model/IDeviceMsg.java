@@ -7,7 +7,7 @@ import com.meizu.mzroottools.model.pojo.DeviceMessage;
 
 public interface IDeviceMsg {
     DeviceMessage getDeviceMessage(Context context, boolean isNeedRefresh);
-    String getRootCode(Context context);
+    byte[] getRootCode(Context context);
     int setRootCode(Context context, byte[] bytes);
     boolean isRooted(Context context);
 }

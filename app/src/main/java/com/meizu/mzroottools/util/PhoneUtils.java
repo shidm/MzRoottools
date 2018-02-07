@@ -3,16 +3,32 @@ package com.meizu.mzroottools.util;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.os.UserManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.meizu.mzroottools.model.pojo.DeviceMessage;
+import com.meizu.mzroottools.model.pojo.GetRootCodeBackMessage;
 
-/**
- * Created by linshen on 15/5/8.
- */
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class PhoneUtils {
 
     public static final String TAG = "PhoneUtils";
@@ -233,6 +249,7 @@ public class PhoneUtils {
             Log.d(TAG, "deviceStatus: null");
             return psnAndChipId;
         } else {
+            Log.d(TAG, "deviceStatus: "+deviceStatus);
             @SuppressLint("WrongConstant") Object deviceStateManager = context.getSystemService(deviceStatus);
             if (deviceStateManager == null) {
                 Log.d(TAG, "deviceStateManager: NULL");
@@ -256,8 +273,8 @@ public class PhoneUtils {
      * @param context
      * @return
      */
-    public synchronized static String getRootSignatureCode(Context context) {
-        String rootSignatureCode = null;
+    public synchronized static byte[] getRootSignatureCode(Context context) {
+        byte[] rootSignatureCode = null;
         String deviceStatus = "";
         try {
             deviceStatus = (String) ReflectHelper.getStaticField(CLASS_NAME_CONTEXT_EXT, "DEVICE_STATE_SERVICE");
@@ -274,7 +291,9 @@ public class PhoneUtils {
                 return rootSignatureCode;
             } else {
                 try {
-                    rootSignatureCode = (String) ReflectHelper.invoke(deviceStateManager, "getRootSignatureCode", new Object[]{});
+                    rootSignatureCode = (byte[]) ReflectHelper.invoke(deviceStateManager, "getRootSignatureCode", new Object[]{});
+//                    Method method = deviceStateManager.getClass().getMethod("getRootSignatureCode", new Class[0]);
+//                    rootSignatureCode = (byte[]) method.invoke(deviceStateManager,new Object[0]);
                 } catch (Exception e) {
                     Log.e("cwj-root", "getRootSignatureCode E: " + e, e);
                     return rootSignatureCode;
@@ -311,13 +330,108 @@ public class PhoneUtils {
             } else {
                 try {
                     ret = (int) ReflectHelper.invoke(deviceStateManager, "setRootSignatureCode", rootSignatureCode);
+//                    Method method = deviceStateManager.getClass().getMethod("setRootSignatureCode", byte[].class);
+//                    ret = (int) method.invoke(deviceStateManager,rootSignatureCode);
                 } catch (Exception e) {
                     Log.e("cwj-root", "setRootSignatureCode E: " + e, e);
                     return ret;
                 }
-                Log.d("cwj-root", "setRootSignatureCode -> " + rootSignatureCode + " | ret = " + ret);
+                Log.d("cwj-root", "setRootSignatureCode -> " + Arrays.toString(rootSignatureCode) + " | ret = " + ret);
             }
         }
         return ret;
+    }
+
+    /**
+     *
+     * @param url
+     * @param deviceMessage
+     * @param handler 回调处理
+     */
+    public synchronized static void getRootCodeFromNetwork(String url, DeviceMessage deviceMessage
+            , final Handler handler){
+
+        char k[] = new char[13];
+        k[0] = 's';
+        k[1] = 'a';
+        k[2] = 'f';
+        k[3] = '.';
+        k[4] = 'C';
+        k[5] = 'T';
+        k[6] = 'R';
+        k[7] = '#';
+        k[8] = '2';
+        k[9] = '1';
+        k[10] = '4';
+        k[11] = 'm';
+        k[12] = 'z';
+
+        String sign = getMd5(deviceMessage.getDeviceImei()
+                + deviceMessage.getDeviceSn()
+                + deviceMessage.getdeviceChipId()
+                + new String(k));
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(5000, TimeUnit.MILLISECONDS)
+                .build();
+        RequestBody body = new FormBody.Builder()
+                .add("imei", deviceMessage.getDeviceImei())
+                .add("sn", deviceMessage.getDeviceSn())
+                .add("chipid", deviceMessage.getdeviceChipId())
+                .add("sign", sign)
+                .build();
+        Log.d(TAG, sign);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .method("POST", body)
+                .build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //请求失败
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                //模拟耗时操作
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                String data = response.body().string();
+                Log.d(TAG, data);
+                Gson gson = new Gson();
+                GetRootCodeBackMessage msg = gson.fromJson(data
+                        , GetRootCodeBackMessage.class);
+                Message message = Message.obtain();
+                message.obj = msg;
+                handler.sendMessage(message);
+            }
+        });
+    }
+
+    //md5加密
+
+    private static String getMd5(String message) {
+        MessageDigest md5;
+        byte[] newPwd = null;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+            newPwd = md5.digest(message.getBytes());
+            Log.d("getMd5: ", message);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < newPwd.length; i++) {
+            if (Integer.toHexString(0xFF & newPwd[i]).length() == 1)
+                s.append("0").append(Integer.toHexString(0xFF & newPwd[i]));
+            else
+                s.append(Integer.toHexString(0xFF & newPwd[i]));
+        }
+        return s.toString();
     }
 }

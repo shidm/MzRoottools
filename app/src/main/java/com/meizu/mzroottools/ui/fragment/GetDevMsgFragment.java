@@ -60,6 +60,8 @@ public class GetDevMsgFragment extends Fragment implements IGetDevMsg, View.OnCl
 
     private IShowDeviceMessagePresenter iShowDeviceMessagePresenter = null;
 
+    private static boolean isOpenDevMsg = false;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -137,10 +139,12 @@ public class GetDevMsgFragment extends Fragment implements IGetDevMsg, View.OnCl
             case R.id.getMsgCard:
                 //获取信息
                 iShowDeviceMessagePresenter.showDevMsg(getContext());
+                isOpenDevMsg = true;
                 //Toast.makeText(getContext(), "获取设备信息：" + Build.MODEL + getSerialNumber(), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.dev_msg_prompt:
                 iShowDeviceMessagePresenter.showDevMsg(getContext());
+                isOpenDevMsg = true;
                 break;
             default:
                 break;
@@ -201,6 +205,9 @@ public class GetDevMsgFragment extends Fragment implements IGetDevMsg, View.OnCl
         if (MzAccountUtil.hasMzAccount(getContext())) {
             Log.d(TAG, "已经登录");
             hintView(0);
+            if (isOpenDevMsg) {
+                iShowDeviceMessagePresenter.showDevMsg(getContext());
+            }
         } else {
             Log.d(TAG, "未登录");
             hintView(1);
